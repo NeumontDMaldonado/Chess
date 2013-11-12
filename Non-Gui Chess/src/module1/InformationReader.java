@@ -12,7 +12,11 @@ public class InformationReader
 	private Board b;
 	public String line;
 	private final String PIECEPLACEMENT = "([RNMBQKP][ld])([a-h])([1-8])";
-	Matcher piecePlace;
+	private final String PIECEMOVEMENT = "[a-h][1-8] [a-h][1-8]";
+//	public final int A = 7, B = 6, C = 5, D = 4, F = 3, G = 2, H = 1;
+//	int place = 2;
+	int chessLetter, chessNum;
+	Matcher piecePlace, pieceMove;
 	/**
 	 * @param args
 	 * constructor
@@ -43,25 +47,21 @@ public class InformationReader
 				line = buff.readLine();
 				Pattern piecePlacement = Pattern.compile(PIECEPLACEMENT);
 				piecePlace = piecePlacement.matcher(line);
-
+				Pattern pieceMovement = Pattern.compile(PIECEMOVEMENT);
+				pieceMove = pieceMovement.matcher(line);
+				
 				if(piecePlace.find())
 				{
-					if(piecePlace.group(3).equals("1"))
-					{
-						placeFirstRow();
-					}
-					else if(piecePlace.group(3).equals("2"))
-					{
-						placeSecondRow();
-					}
-					else if(piecePlace.group(3).equals("7"))
-					{
-						placeSeventhRow();
-					}
-					else if(piecePlace.group(3).equals("8"))
-					{
-						placeEightRow();
-					}
+					translateToDoubleArray(piecePlace.group(2), piecePlace.group(3));
+					b.setBoard(chessLetter, chessNum, piecePlace.group(1));
+				}
+				else if(pieceMove.find())
+				{
+					moveChessPiece();
+				}
+				else
+				{
+					System.err.println("Not a valid input");
 				}
 			}
 		} 
@@ -71,148 +71,37 @@ public class InformationReader
 		}
 	}
 
-	private void placeFirstRow() 
+	public void translateToDoubleArray(String letter, String num)
 	{
-		if(piecePlace.group(2).equals("a"))
+		switch (letter)
 		{
-			b.setBoard(7, 0, piecePlace.group(1));
+		case "a": chessNum = 0;break;
+		case "b": chessNum = 1;break;
+		case "c": chessNum = 2;break;
+		case "d": chessNum = 3;break;
+		case "e": chessNum = 4;break;
+		case "f": chessNum = 5;break;
+		case "g": chessNum = 6;break;
+		case "h": chessNum = 7;break;
 		}
-		else if(piecePlace.group(2).equals("b"))
+		
+		switch (num)
 		{
-			b.setBoard(7, 1, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("c"))
-		{
-			b.setBoard(7, 2, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("d"))
-		{
-			b.setBoard(7, 3, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("e"))
-		{
-			b.setBoard(7, 4, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("f"))
-		{
-			b.setBoard(7, 5, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("g"))
-		{
-			b.setBoard(7, 6, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("h"))
-		{
-			b.setBoard(7, 7, piecePlace.group(1));
+		case "1": chessLetter = 7;break;
+		case "2": chessLetter = 6;break;
+		case "3": chessLetter = 5;break;
+		case "4": chessLetter = 4;break;
+		case "5": chessLetter = 3;break;
+		case "6": chessLetter = 2;break;
+		case "7": chessLetter = 1;break;
+		case "8": chessLetter = 0;break;
 		}
 	}
 	
-	private void placeSecondRow()
+	private void moveChessPiece()
 	{
-		if(piecePlace.group(2).equals("a"))
-		{
-			b.setBoard(6, 0, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("b"))
-		{
-			b.setBoard(6, 1, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("c"))
-		{
-			b.setBoard(6, 2, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("d"))
-		{
-			b.setBoard(6, 3, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("e"))
-		{
-			b.setBoard(6, 4, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("f"))
-		{
-			b.setBoard(6, 5, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("g"))
-		{
-			b.setBoard(6, 6, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("h"))
-		{
-			b.setBoard(6, 7, piecePlace.group(1));
-		}
-	}
-	
-	private void placeSeventhRow()
-	{
-		if(piecePlace.group(2).equals("a"))
-		{
-			b.setBoard(1, 0, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("b"))
-		{
-			b.setBoard(1, 1, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("c"))
-		{
-			b.setBoard(1, 2, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("d"))
-		{
-			b.setBoard(1, 3, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("e"))
-		{
-			b.setBoard(1, 4, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("f"))
-		{
-			b.setBoard(1, 5, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("g"))
-		{
-			b.setBoard(1, 6, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("h"))
-		{
-			b.setBoard(1, 7, piecePlace.group(1));
-		}
-	}
-
-	private void placeEightRow()
-	{
-		if(piecePlace.group(2).equals("a"))
-		{
-			b.setBoard(0, 0, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("b"))
-		{
-			b.setBoard(0, 1, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("c"))
-		{
-			b.setBoard(0, 2, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("d"))
-		{
-			b.setBoard(0, 3, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("e"))
-		{
-			b.setBoard(0, 4, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("f"))
-		{
-			b.setBoard(0, 5, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("g"))
-		{
-			b.setBoard(0, 6, piecePlace.group(1));
-		}
-		else if(piecePlace.group(2).equals("h"))
-		{
-			b.setBoard(0, 7, piecePlace.group(1));
-		}
+		System.out.println("hi");
+		
 	}
 
 	public void end()
