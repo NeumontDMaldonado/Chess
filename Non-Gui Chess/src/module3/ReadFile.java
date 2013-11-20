@@ -1,4 +1,4 @@
-package module1;
+package module3;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class InformationReader 
+import module1.Board;
+
+public class ReadFile 
 {
 	private static Board b;
 	public String line;
@@ -21,39 +23,38 @@ public class InformationReader
 	Matcher piecePlace;
 	Matcher pieceMove;
 	Matcher castle;
-	Pattern pattern[] = new Pattern[3];
-	
+	Pattern pattern[] = new Pattern[2];
+
 	/**
 	 * @param args
 	 * @param b
 	 * constructor
 	 */
-	public InformationReader(String args, Board b)
+	public ReadFile(String args, Board b)
 	{
-		FileReader chessNotationFile = null;
+		FileReader chessMovementFile = null;
 		try 
 		{
-			chessNotationFile = new FileReader(args);
+			chessMovementFile = new FileReader(args);
 		} 
 		catch (FileNotFoundException e) 
 		{
 			System.err.println("No file found");
 		}
 		b.startBoard();
-		BufferedReader buff = new BufferedReader(chessNotationFile);
-		InformationReader.b = b;
+		BufferedReader buff = new BufferedReader(chessMovementFile);
+		ReadFile.b = b;
 		patternArray();
 		read(buff);
 	}
-	
+
 	/**
 	 * sets up the pattern array
 	 */
 	public void patternArray()
 	{
 		pattern[0] = Pattern.compile(PIECEPLACEMENT);
-		pattern[1] = Pattern.compile(CASTLING);
-		pattern[2] = Pattern.compile(PIECEMOVEMENT);
+		pattern[1] = Pattern.compile(PIECEMOVEMENT);
 	}
 
 	/**
@@ -68,49 +69,30 @@ public class InformationReader
 			{
 				line = buff.readLine();
 				piecePlace = pattern[0].matcher(line);
-				pieceMove = pattern[2].matcher(line);
-				castle = pattern[1].matcher(line);
-				
+				pieceMove = pattern[1].matcher(line);
+
 				if(piecePlace.find())
 				{
 					String chessPiece = piecePlace.group("ChessPiece");
 					String chessColor = piecePlace.group("ChessColor");
 					String chessLetter = piecePlace.group("Column");
 					String chessNum = piecePlace.group("Row");
-					
+
 					if(chessColor.equals("d"))
 					{
 						chessPiece = chessPiece.toLowerCase();
 					}
 					placePiece(numberTranslation(chessNum),letterTranslation(chessLetter), chessPiece);
-					System.out.println("Chess piece "+ chessPiece +" has been placed");
-				}
-				else if(castle.find())
-				{
-					String kingSpaceLetter1 = castle.group("KingOriginColumn");
-					String kingSpaceNum1 = castle.group("KingOriginRow");
-					String kingSpaceLetter2 = castle.group("KingNewColumn");
-					String kingSpaceNum2 = castle.group("KingNewRow");
-					String rookSpaceLetter1 = castle.group("RookOriginColumn");
-					String rookSpaceNum1 = castle.group("RookOriginRow");
-					String rookSpaceLetter2 = castle.group("RookNewColumn");
-					String rookSpaceNum2 = castle.group("RookNewRow");
-					
-					
-					moveTwoPieces(letterTranslation(kingSpaceLetter1), numberTranslation(kingSpaceNum1), letterTranslation(kingSpaceLetter2), numberTranslation(kingSpaceNum2), 
-							letterTranslation(rookSpaceLetter1), numberTranslation(rookSpaceNum1), letterTranslation(rookSpaceLetter2), numberTranslation(rookSpaceNum2));		
-					System.out.println("Castling has occured");
 				}
 				else if(pieceMove.find())
 				{
+					b.displayBoard();
 					String firstSpaceLetter = pieceMove.group("OriginColumn");
 					String firstSpaceNum = pieceMove.group("OriginRow");
 					String secondSpaceLetter = pieceMove.group("NewColumn");
 					String secondSpaceNum = pieceMove.group("NewRow");
- 					
-					
-					moveChessPiece(letterTranslation(firstSpaceLetter), numberTranslation(firstSpaceNum), letterTranslation(secondSpaceLetter), numberTranslation(secondSpaceNum));
-					System.out.println("Piece "+ b.checkBoard(numberTranslation(secondSpaceNum),letterTranslation(secondSpaceLetter)) +" has been moved");
+
+					chessPieceRedirection(letterTranslation(firstSpaceLetter), numberTranslation(firstSpaceNum), letterTranslation(secondSpaceLetter), numberTranslation(secondSpaceNum));
 				}
 				else
 				{
@@ -121,6 +103,22 @@ public class InformationReader
 		catch (IOException e) 
 		{
 			System.err.println("IO exception");
+		}
+	}
+
+	public void chessPieceRedirection(int originLetter, int originNum, int newLetter, int newNum)
+	{
+		String chessPiece = b.checkBoard(originNum, originLetter);
+		System.out.println(chessPiece);
+		if(chessPiece.equalsIgnoreCase("r"))
+		{
+			RookMovement rook = new RookMovement(chessPiece, b);
+			rook.checkMove(originLetter, originNum, newLetter, newNum);
+		}
+		else if(chessPiece.equalsIgnoreCase("k"))
+		{
+			KingMovement king = new KingMovement(chessPiece, b);
+			king.checkMove(originLetter, originNum, newLetter, newNum);
 		}
 	}
 
@@ -135,38 +133,7 @@ public class InformationReader
 	{
 		b.placePiece(letter, num, chessPiece);
 	}
-	
-	/**
-	 * @param currentLetter
-	 * @param currentNum
-	 * @param newLetter
-	 * @param newNum
-	 * the switch statement translate the chess notation to the corresponding double array location then moves the chess piece and sets the old location to empty
-	 * @return 
-	 */
-	private void moveChessPiece(int currentLetter, int currentNum, int newLetter, int newNum)
-	{
-		b.board[newNum][newLetter] = b.board[currentNum][currentLetter];
-		b.placePiece(currentNum, currentLetter, b.EMPTYSPACE);
-	}
-	
-	/**
-	 * @param currentLetter1
-	 * @param currentNum1
-	 * @param newLetter1
-	 * @param newNum1
-	 * @param currentLetter2
-	 * @param currentNum2
-	 * @param newLetter2
-	 * @param newNum2
-	 * moves two chess pieces
-	 */
-	private void moveTwoPieces(int currentLetter1, int currentNum1, int newLetter1, int newNum1, int currentLetter2, int currentNum2, int newLetter2, int newNum2)
-	{
-		moveChessPiece(currentLetter1,currentNum1,newLetter1,newNum1);
-		moveChessPiece(currentLetter2,currentNum2,newLetter2,newNum2);
-	}
-	
+
 	/**
 	 * @param letter
 	 * @return
@@ -174,9 +141,10 @@ public class InformationReader
 	 */
 	private int letterTranslation(String letter)
 	{
-		return letter.charAt(0) - 'a';
+		String a = "a";
+		return letter.charAt(0) - a.charAt(0);
 	}
-	
+
 	/**
 	 * @param num
 	 * @return
@@ -184,7 +152,8 @@ public class InformationReader
 	 */
 	private int numberTranslation(String num)
 	{
-		return '8' - num.charAt(0);
+		String eight = "8";
+		return eight.charAt(0) - num.charAt(0);
 	}
 
 	/**

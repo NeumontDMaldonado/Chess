@@ -1,17 +1,17 @@
-package module1;
+package module3;
 
-public class Startup {
+import module1.Board;
+
+public class Lab3 {
 
 	/**
 	 * @param args
-	 * main method
 	 */
 	public static void main(String[] args) 
 	{
 		Board board = new Board();
-		InformationReader reader = new InformationReader(args[0], board);
-		reader.end();
+		ReadFile pieceMovement = new ReadFile(args[0], board);
+		pieceMovement.end();
 		System.out.println("UpperCase is light chess piece");
 	}
-
 }
