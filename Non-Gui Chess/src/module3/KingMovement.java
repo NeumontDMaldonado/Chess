@@ -13,26 +13,26 @@ public class KingMovement extends PieceMovement
 {
 	String king;
 	String k = "k";
-	Board b = new Board();
+	Board board = new Board();
 	
-	public KingMovement(String king, Board b)
+	public KingMovement(String king, Board board)
 	{
 		this.king = king;
-		this.b = b;
+		this.board = board;
 	}
 	
 	public void checkMove(int originLetter, int originNum, int newLetter, int newNum)
 	{
 		if(k.compareTo(king) == 0)
 		{
-			if(checkIfLandOnBlack(newLetter, newNum, b) == 1)
+			if(checkIfLandOnBlack(newLetter, newNum, board) == 1)
 			{
 				validMove(originLetter, originNum, newLetter, newNum);
 			}
 		}
 		else
 		{
-			if(checkIfLandOnWhite(newLetter, newNum, b) == 1)
+			if(checkIfLandOnWhite(newLetter, newNum, board) == 1)
 			{
 				validMove(originLetter, originNum, newLetter, newNum);
 			}
@@ -49,13 +49,11 @@ public class KingMovement extends PieceMovement
 		{
 			if(originLetter - newLetter == 0)
 			{
-				b.placePiece(newNum, newLetter, king);
-				b.placePiece(originNum, originLetter, b.EMPTYSPACE);
+				placePiece(originLetter, originNum, newLetter, newNum, king);
 			}
 			else if(newLetter - originLetter == 0)
 			{
-				b.placePiece(newNum, newLetter, king);
-				b.placePiece(originNum, originLetter, b.EMPTYSPACE);
+				placePiece(originLetter, originNum, newLetter, newNum, king);
 			}
 			else
 			{
@@ -76,18 +74,15 @@ public class KingMovement extends PieceMovement
 	{
 		if(newLetter == originLetter)
 		{
-			b.placePiece(newNum, newLetter, king);
-			b.placePiece(originNum, originLetter, b.EMPTYSPACE);
+			placePiece(originLetter, originNum, newLetter, newNum, king);
 		}
 		else if(originLetter - newLetter == 1)
 		{
-			b.placePiece(newNum, newLetter, king);
-			b.placePiece(originNum, originLetter, b.EMPTYSPACE);
+			placePiece(originLetter, originNum, newLetter, newNum, king);
 		}
 		else if(newLetter - originLetter == 1)
 		{
-			b.placePiece(newNum, newLetter, king);
-			b.placePiece(originNum, originLetter, b.EMPTYSPACE);
+			placePiece(originLetter, originNum, newLetter, newNum, king);
 		}
 		else
 		{

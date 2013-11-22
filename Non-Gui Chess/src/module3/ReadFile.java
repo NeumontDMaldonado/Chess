@@ -108,8 +108,8 @@ public class ReadFile
 
 	public void chessPieceRedirection(int originLetter, int originNum, int newLetter, int newNum)
 	{
+		System.out.println();
 		String chessPiece = b.checkBoard(originNum, originLetter);
-		System.out.println(chessPiece);
 		if(chessPiece.equalsIgnoreCase("r"))
 		{
 			RookMovement rook = new RookMovement(chessPiece, b);
@@ -119,6 +119,21 @@ public class ReadFile
 		{
 			KingMovement king = new KingMovement(chessPiece, b);
 			king.checkMove(originLetter, originNum, newLetter, newNum);
+		}
+		else if(chessPiece.equalsIgnoreCase("b"))
+		{
+			BishopMovement bishop = new BishopMovement(chessPiece, b);
+			bishop.checkMove(originLetter, originNum, newLetter, newNum);
+		}
+		else if(chessPiece.equalsIgnoreCase("q"))
+		{
+			QueenMovement queen = new QueenMovement(chessPiece, b);
+			queen.checkMove(originLetter, originNum, newLetter, newNum);
+		}
+		else if(chessPiece.equalsIgnoreCase("n"))
+		{
+			KnightMovement knight = new KnightMovement(chessPiece, b);
+			knight.checkMove(originLetter, originNum, newLetter, newNum);
 		}
 	}
 
